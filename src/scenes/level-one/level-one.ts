@@ -22,15 +22,20 @@ export default class LevelOne extends Scene {
     // Start the serve after a second
     setTimeout(() => {
       // Set the velocity in pixels per second
-      this.ball.vel = vec(0, 0);
+      this.ball.vel = vec(400, 400);
     }, 1000);
 
     // On collision remove the brick, bounce the ball
-    this.ball.on("precollision", (ev) => {
+    this.ball.on("precollision", (ev: any) => {
       if (this.bricks.indexOf(ev.other) > -1) {
         // kill removes an actor from the current scene
         // therefore it will no longer be drawn or updated
         ev.other.kill();
+      }
+
+      // If we have removed all bricks proceed to next level 
+      if (this.bricks.every(brick => brick.active === false)) {
+        engine.goToScene('levelTwo')
       }
 
       // reverse course after any collision
@@ -76,25 +81,25 @@ export default class LevelOne extends Scene {
       color: Color.Red,
     });
 
-    const padding = 20; // px
-    const xoffset = 90; // x-offset
-    const yoffset = 10; // y-offset
+    const padding = 20;
+    const xoffset = 90;
+    const yoffset = 10;
     const columns = 4;
     const rows = 3;
-    const brickColor = [Color.Violet, Color.Orange, Color.Yellow];
     const brickWidth = engine.drawWidth / columns - padding - padding / columns; // px
-    const brickHeight = 30; // px
+    const brickHeight = 30;
 
+    const brickTypes: string[] = ["Calendar", "CheckIns", "Giving", "Groups", "People", "Registrations", "Services"]
     this.bricks = [];
-    for (let j = 0; j < rows; j++) {
+    for (let row = 0; row < rows; row++) {
       for (let i = 0; i < columns; i++) {
         this.bricks.push(
           new Brick({
             x: xoffset + i * (brickWidth + padding) + padding,
-            y: yoffset + j * (brickHeight + padding) + padding,
+            y: yoffset + row * (brickHeight + padding) + padding,
             width: brickWidth,
             height: brickHeight,
-            color: brickColor[j % brickColor.length],
+            type: brickTypes[row]
           })
         );
       }

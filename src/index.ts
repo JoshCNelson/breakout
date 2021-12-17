@@ -25,12 +25,15 @@ class ManagedGame extends Engine {
 
     const loader = new Loader(Object.values(Resources))
 
-    // customizing loader
-    loader.startButtonFactory = () => {
-      const myButton = document.createElement('button')
-      myButton.textContent = "Let's Breakout!"
-      return myButton
-    }
+    loader.playButtonText = "Let's Pico-Breakout"
+    loader.backgroundColor = "#4c4a50"
+    //loader.logo = "This is s tat"
+    // customizing loader start button
+    //loader.startButtonFactory = () => {
+      //const myButton = document.createElement('button')
+      //myButton.textContent = "Let's Pico-Breakout!"
+      //return myButton
+    //}
 
     return super.start(loader);
   }

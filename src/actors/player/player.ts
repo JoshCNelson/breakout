@@ -1,5 +1,4 @@
 import { Actor, Color, vec } from 'excalibur';
-import { Resources } from '../../resources';
 
 export class Player extends Actor {
   constructor() {
@@ -12,6 +11,5 @@ export class Player extends Actor {
   }
 
   onInitialize() {
-    this.graphics.use(Resources.Sword.toSprite());
   }
 }
