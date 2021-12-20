@@ -1,62 +1,25 @@
-import { Engine, Scene, Color, vec } from 'excalibur';
+import { Scene, Color, vec, GameEvent} from 'excalibur';
+import { ManagedGame } from "../../index"
 
 import Ball from "../../actors/ball"
 import Wall from "../../actors/wall"
 import Brick from "../../actors/brick"
 import Paddle from "../../actors/paddle"
 
+import Lives from "../../actors/lives"
 export default class LevelOne extends Scene {
   private ball: Ball
   private paddle: Paddle
   private bricks: Brick[]
   private walls: Wall[]
+  private lives: Lives 
 
-  public onInitialize(engine: Engine) {
+  public onInitialize(engine: ManagedGame) {
     this.initializeActors(engine)
 
-    // Add a mouse move listener
-    engine.input.pointers.primary.on("move", (evt) => {
-      this.paddle.pos.x = evt.worldPos.x;
-    });
-
-    // Start the serve after a second
-    setTimeout(() => {
-      // Set the velocity in pixels per second
-      this.ball.vel = vec(400, 400);
-    }, 1000);
-
-    // On collision remove the brick, bounce the ball
-    this.ball.on("precollision", (ev: any) => {
-      if (this.bricks.indexOf(ev.other) > -1) {
-        // kill removes an actor from the current scene
-        // therefore it will no longer be drawn or updated
-        ev.other.kill();
-      }
-
-      // If we have removed all bricks proceed to next level 
-      if (this.bricks.every(brick => brick.active === false)) {
-        engine.goToScene('levelTwo')
-      }
-
-      // reverse course after any collision
-      // intersections are the direction body A has to move to not be clipping body B
-      // `ev.intersection` is a vector `normalize()` will make the length of it 1
-      // `negate()` flips the direction of the vector
-      var intersection = ev.intersection.normalize();
-
-      // The largest component of intersection is our axis to flip
-      if (Math.abs(intersection.x) > Math.abs(intersection.y)) {
-        this.ball.vel.x *= -1;
-      } else {
-        this.ball.vel.y *= -1;
-      }
-    });
-
-    this.ball.on("exitviewport", () => {
-      engine.goToScene('levelTwo')
-    });
-
     this.addActorsToScene()
+    this.addEngineHandlers(engine)
+    this.addLevelHandlers(engine)
   }
 
   private addActorsToScene() {
@@ -64,9 +27,11 @@ export default class LevelOne extends Scene {
     this.add(this.paddle)
     this.bricks.forEach((brick) => this.add(brick))
     this.walls.forEach((wall) => this.add(wall))
+    this.add(this.lives)
   }
 
-  private initializeActors(engine: Engine) {
+  private initializeActors(engine: ManagedGame) {
+    this.lives = new Lives(engine.getLives())
     this.paddle = new Paddle({
       x: 150,
       y: engine.drawHeight - 40,
@@ -131,6 +96,80 @@ export default class LevelOne extends Scene {
 
     this.walls = [leftWall, rightWall, ceiling]
     
+  }
+
+  private addEngineHandlers(engine: ManagedGame) {
+    // Add a mouse move listener
+    engine.input.pointers.primary.on("move", (evt) => {
+      this.paddle.pos.x = evt.worldPos.x;
+    });
+  }
+
+  private addLevelHandlers(engine: ManagedGame) {
+    this.on("New ball", () => {
+      this.ball = new Ball({
+        x: 100,
+        y: 200,
+        radius: 10,
+        color: Color.Red,
+      });
+
+      this.add(this.ball)
+
+      // NOTE: This does not seem like a good way of handling this
+      // however there is something I am not understanding about
+      // how the event emitters are supposed to be used so this is
+      // my "make it work" approach and hope to revisit this later
+      this.registerBallEventHandlers(engine)
+    })
+    
+    this.registerBallEventHandlers(engine)
+  }
+
+  private registerBallEventHandlers(engine: ManagedGame) {
+    // On collision remove the brick, bounce the ball
+    this.ball.on("precollision", (ev: any) => {
+      if (this.bricks.indexOf(ev.other) > -1) {
+        // kill removes an actor from the current scene
+        // therefore it will no longer be drawn or updated
+        ev.other.kill();
+      }
+
+      // If we have removed all bricks proceed to next level 
+      if (this.bricks.every(brick => brick.active === false)) {
+        engine.goToScene('levelTwo')
+      }
+
+      // reverse course after any collision
+      // intersections are the direction body A has to move to not be clipping body B
+      // `ev.intersection` is a vector `normalize()` will make the length of it 1
+      // `negate()` flips the direction of the vector
+      var intersection = ev.intersection.normalize();
+
+      // The largest component of intersection is our axis to flip
+      if (Math.abs(intersection.x) > Math.abs(intersection.y)) {
+        this.ball.vel.x *= -1;
+      } else {
+        this.ball.vel.y *= -1;
+      }
+    });
+
+    this.ball.on("exitviewport", () => {
+      const currentLives = engine.getLives()
+      const updatedLives = engine.setLives(currentLives - 1)
+
+      this.lives.setLives(updatedLives)
+      
+      if (updatedLives === -1) {
+        console.log("game over!") // TODO: go to end game screen
+      } else {
+        // NOTE: Not sure what to do with 
+        // GameEvent object just yet
+        this.emit("New ball", new GameEvent())
+      } 
+
+      //engine.goToScene('levelTwo')
+    });
   }
 
   //public onActivate() {}

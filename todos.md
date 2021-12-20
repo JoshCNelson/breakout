@@ -1,0 +1,14 @@
+- Add a logo
+- Look into Physics
+  - https://excaliburjs.com/docs/physics
+- Add audio
+- Sprites for
+  - Ball
+  - Paddle
+- Background image
+- Generate more levels
+- End screen image
+- Keyboard controls
+- Update bricks
+  - make smaller
+    - will need to update associated pngs 
