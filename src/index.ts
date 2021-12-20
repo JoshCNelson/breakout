@@ -13,6 +13,7 @@ export class ManagedGame extends Engine {
   private levelOne: LevelOne;
   private levelTwo: LevelTwo;
   private lives: Lives;
+  public loader: Loader;
 
   public getLives() {
     return this.lives.getLives()
@@ -35,10 +36,10 @@ export class ManagedGame extends Engine {
     this.add('levelTwo', this.levelTwo);
     this.currentScene.add(this.lives)
 
-    const loader = new Loader(Object.values(Resources))
+    this.loader = new Loader(Object.values(Resources))
 
-    loader.playButtonText = "Let's Pico-Breakout"
-    loader.backgroundColor = "#4c4a50"
+    this.loader.playButtonText = "Let's Pico-Breakout"
+    this.loader.backgroundColor = "#4c4a50"
 
     //loader.logo = "base64 encoded logo here" // TODO: Come back and add a logo
 
@@ -49,7 +50,7 @@ export class ManagedGame extends Engine {
       //return myButton
     //}
 
-    return super.start(loader);
+    return super.start(this.loader);
   }
 }
 

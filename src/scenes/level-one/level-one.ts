@@ -47,14 +47,17 @@ export default class LevelOne extends Scene {
     });
 
     const padding = 20;
-    const xoffset = 90;
+    const xoffset = 60;
     const yoffset = 10;
-    const columns = 4;
+    const columns = 8;
     const rows = 3;
-    const brickWidth = engine.drawWidth / columns - padding - padding / columns; // px
-    const brickHeight = 30;
+    const brickWidth = 70 
+    const brickHeight = 22;
 
-    const brickTypes: string[] = ["Calendar", "CheckIns", "Giving", "Groups", "People", "Registrations", "Services"]
+    // NOTE: removing Registrations for now due to art size issues
+    // could be added back in with Designs help in getting a smaller
+    // graphic
+    const brickTypes: string[] = ["Calendar", "CheckIns", "Giving", "Groups", "People", "Services"]
     this.bricks = [];
     for (let row = 0; row < rows; row++) {
       for (let i = 0; i < columns; i++) {
@@ -161,7 +164,8 @@ export default class LevelOne extends Scene {
       this.lives.setLives(updatedLives)
       
       if (updatedLives === -1) {
-        console.log("game over!") // TODO: go to end game screen
+        engine.start()
+        .then(() => engine.goToScene('levelOne'))
       } else {
         // NOTE: Not sure what to do with 
         // GameEvent object just yet
