@@ -9,6 +9,3 @@
 - Generate more levels
 - End screen image
 - Keyboard controls
-- Update bricks
-  - make smaller
-    - will need to update associated pngs 
