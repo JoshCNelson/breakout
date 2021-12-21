@@ -13,13 +13,13 @@ export default class LevelOne extends Scene {
   private bricks: Brick[]
   private walls: Wall[]
   private lives: Lives 
+  public engine: ManagedGame
 
   public onInitialize(engine: ManagedGame) {
-    this.initializeActors(engine)
+    this.engine = engine
+    this.initializeActors()
 
     this.addActorsToScene()
-    this.addEngineHandlers(engine)
-    this.addLevelHandlers(engine)
   }
 
   private addActorsToScene() {
@@ -30,11 +30,11 @@ export default class LevelOne extends Scene {
     this.add(this.lives)
   }
 
-  private initializeActors(engine: ManagedGame) {
-    this.lives = new Lives(engine.getLives())
+  private initializeActors() {
+    this.lives = new Lives(this.engine.getLives())
     this.paddle = new Paddle({
       x: 150,
-      y: engine.drawHeight - 40,
+      y: this.engine.drawHeight - 40,
       width: 150,
       height: 20,
     });
@@ -49,8 +49,8 @@ export default class LevelOne extends Scene {
     const padding = 20;
     const xoffset = 60;
     const yoffset = 10;
-    const columns = 8;
-    const rows = 3;
+    const columns = 1;
+    const rows = 1;
     const brickWidth = 70 
     const brickHeight = 22;
 
@@ -101,14 +101,14 @@ export default class LevelOne extends Scene {
     
   }
 
-  private addEngineHandlers(engine: ManagedGame) {
+  private addEngineHandlers() {
     // Add a mouse move listener
-    engine.input.pointers.primary.on("move", (evt) => {
+    this.engine.input.pointers.primary.on("move", (evt) => {
       this.paddle.pos.x = evt.worldPos.x;
     });
   }
 
-  private addLevelHandlers(engine: ManagedGame) {
+  private addLevelHandlers() {
     this.on("New ball", () => {
       this.ball = new Ball({
         x: 100,
@@ -123,13 +123,13 @@ export default class LevelOne extends Scene {
       // however there is something I am not understanding about
       // how the event emitters are supposed to be used so this is
       // my "make it work" approach and hope to revisit this later
-      this.registerBallEventHandlers(engine)
+      this.registerBallEventHandlers()
     })
     
-    this.registerBallEventHandlers(engine)
+    this.registerBallEventHandlers()
   }
 
-  private registerBallEventHandlers(engine: ManagedGame) {
+  private registerBallEventHandlers() {
     // On collision remove the brick, bounce the ball
     this.ball.on("precollision", (ev: any) => {
       if (this.bricks.indexOf(ev.other) > -1) {
@@ -140,7 +140,7 @@ export default class LevelOne extends Scene {
 
       // If we have removed all bricks proceed to next level 
       if (this.bricks.every(brick => brick.active === false)) {
-        engine.goToScene('levelTwo')
+        this.engine.goToScene('levelTwo')
       }
 
       // reverse course after any collision
@@ -158,14 +158,14 @@ export default class LevelOne extends Scene {
     });
 
     this.ball.on("exitviewport", () => {
-      const currentLives = engine.getLives()
-      const updatedLives = engine.setLives(currentLives - 1)
+      const currentLives = this.engine.getLives()
+      const updatedLives = this.engine.setLives(currentLives - 1)
 
       this.lives.setLives(updatedLives)
       
       if (updatedLives === -1) {
-        engine.start()
-        .then(() => engine.goToScene('levelOne'))
+        this.engine.start()
+        .then(() => this.engine.goToScene('levelOne'))
       } else {
         // NOTE: Not sure what to do with 
         // GameEvent object just yet
@@ -176,6 +176,9 @@ export default class LevelOne extends Scene {
     });
   }
 
-  //public onActivate() {}
+  public onActivate() {
+    this.addEngineHandlers()
+    this.addLevelHandlers()
+  }
   //public onDeactivate() {}
 }
