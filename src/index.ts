@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Actor, CollisionType, Color, Engine, DisplayMode, Loader } from "excalibur";
 import { Resources } from "./resources"
 import Wall from "./actors/wall"
@@ -24,7 +25,10 @@ export class ManagedGame extends Engine {
   }
 
   constructor() {
-    super({ displayMode: DisplayMode.FitScreen });
+    super({
+      backgroundColor: Color.DarkGray,
+      displayMode: DisplayMode.FitScreen
+    });
   }
 
   public start() {
@@ -53,9 +57,10 @@ export class ManagedGame extends Engine {
     return super.start(this.loader);
   }
 }
-
 const managedGame = new ManagedGame();
 
 managedGame.start().then(() => {
+  Resources.ThemeSong.loop = true
+  //Resources.ThemeSong.play(1) // uncomment when you want sound to play
   managedGame.goToScene('levelOne');
 });

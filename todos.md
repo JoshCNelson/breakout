@@ -2,6 +2,9 @@
 - Look into Physics
   - https://excaliburjs.com/docs/physics
 - Add audio
+  - https://freemusicarchive.org/music/sawsquarenoise/dojokratos/boss-theme
+  - https://pixabay.com/sound-effects/chime-sound-7143/
+  - Need to figure out how to do attribution
 - Sprites for
   - Ball
   - Paddle
@@ -9,3 +12,5 @@
 - Generate more levels
 - End screen image
 - Keyboard controls
+- Figure out why ts fails when importing audio file
+  - Currently have a ts-nocheck squelching the error

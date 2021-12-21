@@ -35,7 +35,7 @@ export default class LevelOne extends Scene {
     this.paddle = new Paddle({
       x: 150,
       y: engine.drawHeight - 40,
-      width: 200,
+      width: 150,
       height: 20,
     });
 

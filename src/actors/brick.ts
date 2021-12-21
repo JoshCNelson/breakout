@@ -29,6 +29,12 @@ export default class Brick extends Actor {
     this.type = type 
 
     this.body.collisionType = CollisionType.Active
+
+    // NOTE: Is precollision the appropriate lifecycle we want to
+    // hook into?
+    this.on('precollision', (_) => {
+      Resources.Chime.play(1)
+    })
   }
 
   onInitialize() {
